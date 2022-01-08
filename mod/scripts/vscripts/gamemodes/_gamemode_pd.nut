@@ -16,7 +16,7 @@ struct {
 void function _PD_Init() {
 	IS_PD = true
 	int titanTimer = GetConVarInt("pd_titan_spawn")
-	file.endTime = GetServerVar("gameEndTime")
+	file.endTime = expect int( GetServerInt("gameEndTime") ) 
 
     AddClientCommandCallback( "ptest", ClientCommand_Test )
 	AddCallback_OnPlayerKilled( OnPlayerKilled )
