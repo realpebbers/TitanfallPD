@@ -9,20 +9,34 @@ global bool IS_PD = false
 struct {
     entity fakeTitan
 	entity currentTitan
+
+	int endTime
 } file;
 
 void function _PD_Init() {
+	IS_PD = true
+	int titanTimer = GetConVarInt("pd_titan_spawn")
+	file.endTime = GetServerVar("gameEndTime")
+
     AddClientCommandCallback( "ptest", ClientCommand_Test )
+	AddCallback_OnPlayerKilled( OnPlayerKilled )
 
     thread CreateFakeTitan()
-
-	IS_PD = true
+	thread TitanSpawner(titanTimer)
 }
 
 void function CreateFakeTitan() {
     wait 1
     file.fakeTitan = CreateNPCTitan( "titan_ogre", TEAM_UNASSIGNED, <0,0,0>, <0,0,0>, [] )
     file.fakeTitan.Hide()
+}
+
+void function TitanSpawner(int interval) {
+	while(Time() < file.endTime) {
+		wait interval
+
+		SpawnTitanToTakeBatteries()
+	}
 }
 
 bool function ClientCommand_Test( entity player, array<string> args ) {
@@ -63,7 +77,9 @@ void function DeleteTitanAfterTime() {
 	int timeToDie = GetConVarInt("pd_titan_lifetime")
 	wait timeToDie
 
-	file.currentTitan.Die()
+	if (IsValid(file.currentTitan) && IsAlive(file.currentTitan)) {
+		file.currentTitan.Die()
+	}
 }
 
 void function SpawnBattery(vector origin) {
@@ -75,6 +91,17 @@ void function SpawnBattery(vector origin) {
 
     AddCallback_ScriptTriggerEnter( battery, OnBatteryPickup )
     ScriptTriggerSetEnabled(battery, true)
+}
+
+void function OnPlayerKilled( entity victim, entity attacker, var damageInfo ) {
+	// Get the ground
+	vector origin = victim.GetOrigin()
+	float traceFrac = TraceLineSimple( origin, origin - Vector(0,0,200), victim )
+	vector floorPos = origin - Vector(0,0,200 * traceFrac)
+
+	floorPos.z += 10
+
+	SpawnBattery(floorPos)
 }
 
 void function OnPlaceBatteries(entity player) {

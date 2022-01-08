@@ -22,6 +22,21 @@ void function Cl_PD_Init() {
 
 }
 
+void function ServerCallback_AnnounceTitanDropping()
+{
+	string announcementString = "Titan Dropping"
+	string announcementSubString = "Run towards it to deposit your batteries"
+	
+	AnnouncementData announcement = Announcement_Create( announcementString )
+	Announcement_SetSubText( announcement, announcementSubString )
+	Announcement_SetTitleColor( announcement, <1,0,0> )
+	Announcement_SetPurge( announcement, true )
+	Announcement_SetPriority( announcement, 200 ) //Be higher priority than Titanfall ready indicator etc
+	Announcement_SetSoundAlias( announcement, SFX_HUD_ANNOUNCE_QUICK )
+	Announcement_SetStyle( announcement, ANNOUNCEMENT_STYLE_QUICK )
+	AnnouncementFromClass( GetLocalViewPlayer(), announcement )
+}
+
 void function ServerCallback_GameModePD_Battery(int ehandle, float x, float y, float z) {
     vector origin = <x,y,z>
     entity player = GetLocalClientPlayer()

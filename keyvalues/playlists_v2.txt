@@ -16,8 +16,8 @@ playlists
 				max_players 16
 				max_teams 2
 				classic_mp 1
-				scorelimit 5
-				timelimit 2
+				scorelimit 100
+				timelimit 10
 				roundtimelimit 3
 				roundscorelimit 5
 				
@@ -79,7 +79,7 @@ playlists
         {
             Tokens
             {
-		        "GAMEMODE_pd"	"PD"
+		        "GAMEMODE_PD"	"PD"
             }
         }
     }

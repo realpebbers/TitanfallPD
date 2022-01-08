@@ -46,4 +46,5 @@ void function PDRegisterNetworkVars()
 
 	Remote_RegisterFunction( "ServerCallback_GameModePD_Battery" )
 	Remote_RegisterFunction( "ServerCallback_GameModePD_BatteryDestroy" )
+	Remote_RegisterFunction( "ServerCallback_AnnounceTitanDropping" )
 }
