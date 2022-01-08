@@ -16,7 +16,6 @@ struct {
 void function _PD_Init() {
 	IS_PD = true
 	int titanTimer = GetConVarInt("pd_titan_spawn")
-	file.endTime = expect int( GetServerVar("gameEndTime") ) 
 
     AddClientCommandCallback( "ptest", ClientCommand_Test )
 	AddCallback_OnPlayerKilled( OnPlayerKilled )
@@ -27,6 +26,8 @@ void function _PD_Init() {
 
 void function CreateFakeTitan() {
     wait 1
+	// this is here instead of doing it in After and i'm lazy
+	file.endTime = expect int( GetServerVar("gameEndTime") )
     file.fakeTitan = CreateNPCTitan( "titan_ogre", TEAM_UNASSIGNED, <0,0,0>, <0,0,0>, [] )
     file.fakeTitan.Hide()
 }
