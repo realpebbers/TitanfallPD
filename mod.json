@@ -1,0 +1,36 @@
+{
+    "Name": "Player Destruction",
+    "LoadPriority": 2,
+    "Version": "1.0.0",
+    "RequiredOnClient": true,
+    "ConVars": [
+        {
+			"Name": "pd_titan_lifetime",
+			"DefaultValue": "30"
+		},
+        {
+            "Name": "pd_titan_spawn",
+            "DefaultValue": "60"
+        }
+    ],
+    "Scripts": [
+        {
+            "Path": "gamemodes/sh_gamemode_pd.nut",
+            "RunOn": "SERVER || CLIENT",
+            "ServerCallback": {
+                "Before": "PDMode_Init"
+            },
+            "ClientCallback": {
+                "Before": "PDMode_Init"
+            }
+        },
+        {
+            "Path": "gamemodes/cl_gamemode_pd.nut",
+            "RunOn": "CLIENT"
+        },
+        {
+            "Path": "gamemodes/_gamemode_pd.nut",
+            "RunOn": "SERVER"
+        }
+    ]
+}
