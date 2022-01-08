@@ -73,7 +73,7 @@ void function SpawnTitanToTakeBatteries() {
 			origin = < 805, 1359, 125 >
 			break
 		case "mp_glitch":
-			origin = < -2814, -1178, 150 >
+			origin = < -2814, -1178, 120 >
 			break
 		case "mp_thaw":
 			origin = < 359, -1508, -150 >
