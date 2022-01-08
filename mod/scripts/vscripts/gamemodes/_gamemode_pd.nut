@@ -10,33 +10,37 @@ struct {
     entity fakeTitan
 	entity currentTitan
 
-	int endTime
+	float endTime
 } file;
 
 void function _PD_Init() {
 	IS_PD = true
-	int titanTimer = GetConVarInt("pd_titan_spawn")
 
     AddClientCommandCallback( "ptest", ClientCommand_Test )
 	AddCallback_OnPlayerKilled( OnPlayerKilled )
 
     thread CreateFakeTitan()
-	thread TitanSpawner(titanTimer)
 }
 
 void function CreateFakeTitan() {
     wait 1
 	// this is here instead of doing it in After and i'm lazy
-	file.endTime = expect int( GetServerVar("gameEndTime") )
     file.fakeTitan = CreateNPCTitan( "titan_ogre", TEAM_UNASSIGNED, <0,0,0>, <0,0,0>, [] )
     file.fakeTitan.Hide()
+
+	int titanTimer = GetConVarInt("pd_titan_spawn")
+
+	thread TitanSpawner(titanTimer)
 }
 
 void function TitanSpawner(int interval) {
-	while(Time() < file.endTime) {
-		wait interval
+	
+	while(true) {
+		wait interval + GetConVarInt("pd_titan_lifetime")
 
-		SpawnTitanToTakeBatteries()
+		if (Time() < (expect float(GetServerVar("gameEndTime")))) {
+			SpawnTitanToTakeBatteries()
+		}
 	}
 }
 
@@ -64,6 +68,18 @@ bool function ClientCommand_Test( entity player, array<string> args ) {
 
 void function SpawnTitanToTakeBatteries() {
     vector origin = < -76, 1058, 1450 >
+	switch(GetMapName()) {
+		case "mp_angel_city":
+			origin = < 805, 1359, 125 >
+			break
+		case "mp_glitch":
+			origin = < -2814, -1178, 150 >
+			break
+		case "mp_thaw":
+			origin = < 359, -1508, -150 >
+			break
+	}
+
     vector angles = <0,0,0>
 
     Point point
@@ -103,6 +119,7 @@ void function OnPlayerKilled( entity victim, entity attacker, var damageInfo ) {
 	floorPos.z += 10
 
 	SpawnBattery(floorPos)
+	TakeAwayBatteries(victim)
 }
 
 void function OnPlaceBatteries(entity player) {
@@ -138,20 +155,21 @@ void function TakeAwayBatteries(entity pilot) {
 	SetPlayerBatteryCount( pilot, 0 )
 
 	entity battery = GetBatteryOnBack( pilot )
-	Assert( IsValid( battery ) )
-	Assert( battery.GetParent() == pilot )
 
 	SetBatteryOnBack( pilot, null )
-	battery.Minimap_AlwaysShow( TEAM_MILITIA, null )
-	battery.Minimap_AlwaysShow( TEAM_IMC, null )
-
-	battery.s.touchEnabledTime = Time() + 0.3 
-
-	battery.Destroy()
+	if (IsValid(battery) && battery != null) {
+		battery.Destroy()
+	}
 }
 
 void function CreateNeutralTitanAndHotdropAtPoint(Point spawnPoint)
 {
+	if (GetPlayerArray().len() == 0) return
+
+	foreach(entity online in GetPlayerArray()) {
+		Remote_CallFunction_NonReplay(online, "ServerCallback_AnnounceTitanDropping")
+	}
+
 	entity titanFallDisablingEntity = CreateInfoTarget()
 
 	OnThreadEnd(

@@ -1687,6 +1687,8 @@ void function Rodeo_DropAllBatteries( entity player )
 	if ( !PlayerHasBattery( player ) )
 		return
 
+	if (IS_PD) return
+
 	while ( GetPlayerBatteryCount( player ) > 1 )
 	{
 		entity newBattery = Rodeo_CreateBatteryPack()

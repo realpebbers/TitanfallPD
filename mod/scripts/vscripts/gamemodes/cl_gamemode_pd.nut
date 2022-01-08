@@ -1,6 +1,7 @@
 global function Cl_PD_Init
 global function ServerCallback_GameModePD_Battery
 global function ServerCallback_GameModePD_BatteryDestroy
+global function ServerCallback_AnnounceTitanDropping
 
 const asset BATTERY = $"models/titans/medium/titan_medium_battery_static.mdl"
 
@@ -48,18 +49,17 @@ void function ServerCallback_GameModePD_Battery(int ehandle, float x, float y, f
     AddHighlight(battery)
     
     file.cache[ehandle] <- battery
-    print("SPAWNING: " + ehandle)
-
     // TODO: Sync all battery animations, this may be too many threads
     thread StartAnimating(battery)
 }
 
 void function ServerCallback_GameModePD_BatteryDestroy(int ehandle) {
     entity battery = file.cache[ehandle]
-    print("EHANDLE: " + ehandle)
-
-    battery.Destroy()
-    delete file.cache[ehandle]
+    
+    if(IsValid(battery) && battery != null) {
+        battery.Destroy()
+        delete file.cache[ehandle]
+    }
 }
 
 // Minecraft style dropped entity
